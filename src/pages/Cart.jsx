@@ -1,11 +1,47 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { createOrder } from "../api";
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, clearCart, total, itemCount } =
     useCart();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState(null);
+
+  async function handleCheckout() {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+    setCheckingOut(true);
+    setCheckoutError(null);
+    try {
+      await createOrder({
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        items: cart.map((item) => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+        })),
+        total,
+        createdAt: new Date().toISOString(),
+      });
+      clearCart();
+      navigate("/orders");
+    } catch (err) {
+      setCheckoutError("Checkout failed. Please try again.");
+    } finally {
+      setCheckingOut(false);
+    }
+  }
 
   if (cart.length === 0) {
     return (
@@ -62,13 +98,17 @@ export default function Cart() {
         </p>
       </div>
 
+      {checkoutError && (
+        <div className="cyber-alert cyber-alert-error mb-3">
+          {checkoutError}
+        </div>
+      )}
+
       <Row className="gy-4 mt-1">
-        {/* ── ITEM LIST ── */}
         <Col lg={8}>
           <div className="d-flex flex-column gap-3">
             {cart.map((item) => (
               <div key={item.id} className="glass-card cart-item-card">
-                {/* Clickable image */}
                 <div
                   className="cart-item-img"
                   onClick={() => navigate(`/products/${item.id}`)}
@@ -77,7 +117,6 @@ export default function Cart() {
                   <img src={item.image} alt={item.title} />
                 </div>
 
-                {/* Info */}
                 <div className="cart-item-info">
                   <p className="product-category mb-1">{item.category}</p>
                   <h6
@@ -92,7 +131,6 @@ export default function Cart() {
                   </p>
                 </div>
 
-                {/* Controls */}
                 <div className="cart-item-controls">
                   <p className="cart-item-subtotal">
                     ${(item.price * item.quantity).toFixed(2)}
@@ -145,7 +183,6 @@ export default function Cart() {
           </div>
         </Col>
 
-        {/* ── ORDER SUMMARY ── */}
         <Col lg={4}>
           <div className="glass-card p-4 cart-summary">
             <h5 className="cart-summary-title">Order Summary</h5>
@@ -168,8 +205,12 @@ export default function Cart() {
               <span>${total.toFixed(2)}</span>
             </div>
 
-            <button className="btn-cyber btn-cyber-primary w-100 mt-3">
-              Checkout
+            <button
+              className="btn-cyber btn-cyber-primary w-100 mt-3"
+              onClick={handleCheckout}
+              disabled={checkingOut}
+            >
+              {checkingOut ? "Placing Order..." : "Checkout"}
             </button>
             <button
               className="btn-cyber btn-cyber-secondary w-100 mt-2"

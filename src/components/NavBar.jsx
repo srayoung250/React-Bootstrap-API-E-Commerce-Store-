@@ -44,6 +44,9 @@ export default function NavBar() {
                 )}
               </span>
             </Nav.Link>
+            <Nav.Link as={NavLink} to="/orders" className="cyber-nav-link">
+              Orders
+            </Nav.Link>
 
             {currentUser ? (
               <>

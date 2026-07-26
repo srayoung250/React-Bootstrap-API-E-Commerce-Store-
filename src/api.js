@@ -6,10 +6,16 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  query,
+  where,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
 const productsRef = collection(db, "products");
+const ordersRef = collection(db, "orders");
+
+// ─── Products ───
 
 export async function getProducts() {
   const snap = await getDocs(productsRef);
@@ -34,4 +40,27 @@ export async function updateProduct(id, product) {
 
 export async function deleteProduct(id) {
   await deleteDoc(doc(db, "products", id));
+}
+
+// ─── Orders ───
+
+export async function createOrder(order) {
+  const docRef = await addDoc(ordersRef, order);
+  return { id: docRef.id, ...order };
+}
+
+export async function getOrdersByUser(userId) {
+  const q = query(
+    ordersRef,
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function getOrder(id) {
+  const snap = await getDoc(doc(db, "orders", id));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() };
 }
