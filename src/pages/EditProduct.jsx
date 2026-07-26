@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Form, Row, Col } from "react-bootstrap";
-import axios from "axios";
+import { getProduct, updateProduct } from "../api";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const CATEGORIES = [
@@ -29,10 +29,9 @@ export default function EditProduct() {
   const [apiError, setApiError] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`https://fakestoreapi.com/products/${id}`)
-      .then((res) => {
-        const p = res.data;
+    getProduct(id)
+      .then((p) => {
+        if (!p) throw new Error("not found");
         setForm({
           title: p.title,
           price: p.price,
@@ -70,7 +69,7 @@ export default function EditProduct() {
     setSubmitting(true);
     setApiError(null);
     try {
-      await axios.put(`https://fakestoreapi.com/products/${id}`, {
+      await updateProduct(id, {
         title: form.title,
         price: Number(form.price),
         description: form.description,
@@ -116,7 +115,7 @@ export default function EditProduct() {
             marginTop: 10,
           }}
         >
-          Update product #{id} via FakeStoreAPI PUT request
+          Update this product in Firestore
         </p>
       </div>
 

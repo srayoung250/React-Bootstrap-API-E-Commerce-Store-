@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import axios from "axios";
+import { getProducts } from "../api";
 import ProductCard from "../components/ProductCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -20,11 +20,10 @@ export default function Products() {
   const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
-    axios
-      .get("https://fakestoreapi.com/products")
-      .then((res) => {
-        setProducts(res.data);
-        setFiltered(res.data);
+    getProducts()
+      .then((data) => {
+        setProducts(data);
+        setFiltered(data);
       })
       .catch(() => setError("Failed to load products. Please try again."))
       .finally(() => setLoading(false));
@@ -45,7 +44,6 @@ export default function Products() {
         <div className="page-divider" />
       </div>
 
-      {/* Category filters */}
       {!loading && !error && (
         <div className="d-flex flex-wrap gap-2 justify-content-center mb-4">
           {CATEGORIES.map((cat) => (

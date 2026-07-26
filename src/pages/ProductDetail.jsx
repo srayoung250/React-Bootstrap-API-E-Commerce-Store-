@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import axios from "axios";
+import { getProduct, deleteProduct } from "../api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import DeleteModal from "../components/DeleteModal";
 import { useCart } from "../context/CartContext";
@@ -20,9 +20,11 @@ export default function ProductDetail() {
 
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`https://fakestoreapi.com/products/${id}`)
-      .then((res) => setProduct(res.data))
+    getProduct(id)
+      .then((data) => {
+        if (!data) throw new Error("not found");
+        setProduct(data);
+      })
       .catch(() => setError("Product not found or failed to load."))
       .finally(() => setLoading(false));
   }, [id]);
@@ -30,7 +32,7 @@ export default function ProductDetail() {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`https://fakestoreapi.com/products/${id}`);
+      await deleteProduct(id);
       setShowModal(false);
       navigate("/products", {
         state: { toast: `Product "${product.title}" was deleted.` },
@@ -84,18 +86,16 @@ export default function ProductDetail() {
 
       <div className="glass-card p-4 p-lg-5">
         <Row className="gy-4 align-items-center">
-          {/* Image */}
           <Col lg={5}>
             <div className="detail-img-wrap">
               <img src={product.image} alt={product.title} />
             </div>
           </Col>
 
-          {/* Info */}
           <Col lg={7}>
             <span className="detail-category-badge">{product.category}</span>
             <h1 className="detail-title">{product.title}</h1>
-            <p className="detail-price">${product.price.toFixed(2)}</p>
+            <p className="detail-price">${Number(product.price).toFixed(2)}</p>
 
             {product.rating && (
               <p className="detail-rating">

@@ -1,9 +1,17 @@
-import { Navbar, Nav, Container } from 'react-bootstrap'
-import { Link, NavLink } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { Navbar, Nav, Container } from "react-bootstrap";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function NavBar() {
-  const { itemCount } = useCart()
+  const { itemCount } = useCart();
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/");
+  }
 
   return (
     <Navbar expand="lg" className="cyber-navbar">
@@ -30,13 +38,43 @@ export default function NavBar() {
               <span className="cart-badge-wrap">
                 🛒 Cart
                 {itemCount > 0 && (
-                  <span className="cart-badge">{itemCount > 99 ? '99+' : itemCount}</span>
+                  <span className="cart-badge">
+                    {itemCount > 99 ? "99+" : itemCount}
+                  </span>
                 )}
               </span>
             </Nav.Link>
+
+            {currentUser ? (
+              <>
+                <Nav.Link as={NavLink} to="/profile" className="cyber-nav-link">
+                  {currentUser.email}
+                </Nav.Link>
+                <Nav.Link
+                  as="button"
+                  onClick={handleLogout}
+                  className="cyber-nav-link"
+                >
+                  Logout
+                </Nav.Link>
+              </>
+            ) : (
+              <>
+                <Nav.Link
+                  as={NavLink}
+                  to="/register"
+                  className="cyber-nav-link"
+                >
+                  Register
+                </Nav.Link>
+                <Nav.Link as={NavLink} to="/login" className="cyber-nav-link">
+                  Login
+                </Nav.Link>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
-  )
+  );
 }

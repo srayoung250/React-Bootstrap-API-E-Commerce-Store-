@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Container, Form, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { createProduct } from "../api";
 
 const CATEGORIES = [
   "electronics",
@@ -51,7 +51,7 @@ export default function AddProduct() {
     setSubmitting(true);
     setApiError(null);
     try {
-      const res = await axios.post("https://fakestoreapi.com/products", {
+      const newProduct = await createProduct({
         title: form.title,
         price: Number(form.price),
         description: form.description,
@@ -59,7 +59,7 @@ export default function AddProduct() {
         image: "https://fakestoreapi.com/img/placeholder.jpg",
       });
       setSuccess(
-        `Product "${res.data.title || form.title}" created successfully! (ID: ${res.data.id})`,
+        `Product "${newProduct.title}" created successfully! (ID: ${newProduct.id})`,
       );
       setForm(empty);
     } catch {
@@ -84,7 +84,7 @@ export default function AddProduct() {
             marginTop: 10,
           }}
         >
-          Create a new product via FakeStoreAPI POST request
+          Create a new product in Firestore
         </p>
       </div>
 
@@ -118,7 +118,6 @@ export default function AddProduct() {
         <div className="glass-card p-4">
           <Form onSubmit={handleSubmit} noValidate>
             <Row className="gy-3">
-              {/* Title */}
               <Col xs={12}>
                 <Form.Group>
                   <label className="cyber-label">Product Title</label>
@@ -136,7 +135,6 @@ export default function AddProduct() {
                 </Form.Group>
               </Col>
 
-              {/* Price + Category */}
               <Col sm={6}>
                 <Form.Group>
                   <label className="cyber-label">Price ($)</label>
@@ -175,7 +173,6 @@ export default function AddProduct() {
                 </Form.Group>
               </Col>
 
-              {/* Description */}
               <Col xs={12}>
                 <Form.Group>
                   <label className="cyber-label">Description</label>

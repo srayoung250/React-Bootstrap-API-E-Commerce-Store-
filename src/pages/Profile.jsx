@@ -58,7 +58,10 @@ function Profile() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="main-content">
+    <div
+      className="main-content"
+      style={{ maxWidth: "500px", margin: "0 auto" }}
+    >
       <h2>Your Profile</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "limegreen" }}>Profile updated!</p>}
