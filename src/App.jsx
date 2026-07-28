@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
+import PrivateRoute from "./components/PrivateRoute";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -25,14 +26,49 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/add-product" element={<AddProduct />} />
-              <Route path="/edit-product/:id" element={<EditProduct />} />
+              <Route
+                path="/add-product"
+                element={
+                  <PrivateRoute>
+                    <AddProduct />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/edit-product/:id"
+                element={
+                  <PrivateRoute>
+                    <EditProduct />
+                  </PrivateRoute>
+                }
+              />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/orders" element={<OrderHistory />} />
-              <Route path="/orders/:id" element={<OrderDetail />} />
+              <Route
+                path="/orders"
+                element={
+                  <PrivateRoute>
+                    <OrderHistory />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/orders/:id"
+                element={
+                  <PrivateRoute>
+                    <OrderDetail />
+                  </PrivateRoute>
+                }
+              />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
             </Routes>
           </main>
         </AuthProvider>
