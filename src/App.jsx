@@ -13,7 +13,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import OrderHistory from "./pages/OrderHistory";
 import OrderDetail from "./pages/OrderDetail";
-import Seed from "./pages/Seed";
+
 function App() {
   return (
     <CartProvider>

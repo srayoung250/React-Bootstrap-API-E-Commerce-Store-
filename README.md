@@ -51,7 +51,7 @@ A modern e-commerce front-end built with React, featuring a glassmorphic UI with
 src/
 ├── context/
 │   └── CartContext.jsx      # Global cart state (add, remove, update qty, clear)
-├── components/git 
+├── components/
 │   ├── NavBar.jsx           # Fixed glass navbar with live cart badge
 │   ├── ProductCard.jsx      # Reusable product card with add-to-cart
 │   ├── LoadingSpinner.jsx   # Cyberpunk dual-colour spinner

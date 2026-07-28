@@ -8,7 +8,6 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -50,13 +49,10 @@ export async function createOrder(order) {
 }
 
 export async function getOrdersByUser(userId) {
-  const q = query(
-    ordersRef,
-    where("userId", "==", userId),
-    orderBy("createdAt", "desc"),
-  );
+  const q = query(ordersRef, where("userId", "==", userId));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const orders = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
 export async function getOrder(id) {

@@ -943,3 +943,14 @@ body {
     flex-wrap: wrap;
   }
 }
+
+/* ── ORDER ROW ─────────────────────────────── */
+.order-row {
+  cursor: pointer;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.order-row:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 229, 255, .55);
+  box-shadow: 0 12px 36px rgba(0, 229, 255, .18);
+}
